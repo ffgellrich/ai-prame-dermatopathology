@@ -1,0 +1,68 @@
+# =============================================================================
+# AI Model Configuration (Virchow2 Foundation Model & Vision Transformer MIL)
+# Study: Diagnostic AI & Morphological Features in Melanocytic Lesions
+# =============================================================================
+
+preprocessing:
+  wsi_dir: "data/wsi"
+  output_dir: "data/features"
+  cache_dir: "data/cache_256_224"
+  extractor: "virchow2"
+  device: "cuda"
+
+  # Tiling specifications
+  tile_size_um: 256.0
+  tile_size_px: 224
+
+crossval:
+  task: "classification"
+  clini_table: "data/metadata/PRAME_Studie_clinictable_80.xlsx"
+  slide_table: "data/metadata/PRAME_Studie_slideTable_80_HE.xlsx"
+  feature_dir: "data/features/virchow2-a8be48b6-256/data"
+  output_dir: "results/models/cross_val_HE_80"
+
+  patient_label: "Schnitt_ID"
+  filename_label: "HE-Dateiname"
+  ground_truth_label: "KI_maligne"
+
+training:
+  task: "classification"
+  clini_table: "data/metadata/PRAME_Studie_clinictable_80.xlsx"
+  slide_table: "data/metadata/PRAME_Studie_slideTable_80_HE.xlsx"
+  feature_dir: "data/features/virchow2-a8be48b6-256/data"
+  output_dir: "results/models/train_80_HE"
+
+  patient_label: "Schnitt_ID"
+  filename_label: "HE-Dateiname"
+  ground_truth_label: "KI_maligne"
+
+deployment:
+  clini_table: "data/metadata/PRAME_Studie_clinictable_20.xlsx"
+  slide_table: "data/metadata/PRAME_Studie_slideTable_20_HE.xlsx"
+  feature_dir: "data/features/virchow2-a8be48b6-256/data"
+  output_dir: "results/models/deploy_20_HE"
+
+  patient_label: "Schnitt_ID"
+  filename_label: "HE-Dateiname"
+  ground_truth_label: "KI_maligne"
+  checkpoint_paths:
+    - "models/checkpoints/model_best.ckpt"
+
+advanced_config:
+  seed: 42
+  max_epochs: 32
+  patience: 16
+  batch_size: 64
+  bag_size: 512
+  max_lr: 1e-4
+  div_factor: 25.0
+  model_name: "vit"
+
+  model_params:
+    vit:
+      dim_model: 512
+      dim_feedforward: 512
+      n_heads: 8
+      n_layers: 2
+      dropout: 0.25
+      use_alibi: false
